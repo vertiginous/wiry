@@ -1,0 +1,6 @@
+--format progress
+--format html:../wiry_specs.html
+--colour
+--require lib/wiry
+
+
