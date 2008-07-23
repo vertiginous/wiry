@@ -44,8 +44,24 @@ module MSI
       @db = nil
     end
     
-    def create_table(name, &block)
-      execute Schema.new(name, &block).to_s
+    def tables
+      execute('SELECT Name FROM _Tables').to_a.flatten
+    end
+    
+    def create_table(hash)
+      hash.each do|table, data|
+        schema = Schema.new(table){ |s| 
+          data.each{|d| s.send(*d)}
+        }
+        v = execute( schema.to_s )
+        v.close        
+      end
+    end
+    alias :create_tables :create_table
+    
+    def drop_table(name)
+      v = execute( "DROP TABLE #{name}" )
+      v.close
     end
 
   end

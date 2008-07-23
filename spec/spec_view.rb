@@ -2,7 +2,7 @@
 describe 'MSI::View' do
   
   before :each do
-    @db = MSI::Database.connect('../msi/UISample.msi')
+    @db = MSI::Database.connect('spec/msi/UISample.msi')
     @view = @db.execute('SELECT * FROM Error')
   end
   

@@ -35,7 +35,11 @@ module MSI
     end
     
     def self.update(name, size=20)
-      summary = new(name, size)
+      begin
+        summary = new(name, size)
+      rescue WIN32OLERuntimeError
+        raise MSI::Record.new(MSI.conn.LastErrorRecord).to_a.inspect
+      end
       yield summary
       summary.update
       summary.close      
@@ -81,19 +85,19 @@ module MSI
       @summary['Property', PID_REVNUMBER]
     end
     
-    def wordcount=(w)
+    def word_count=(w)
       @summary['Property', PID_WORDCOUNT] = w # 2 
     end
     
-    def wordcount
+    def word_count
       @summary['Property', PID_WORDCOUNT]
     end
     
-    def pagecount=(p)
+    def page_count=(p)
       @summary['Property', PID_PAGECOUNT] = p # 200
     end
     
-    def pagecount
+    def page_count
       @summary['Property', PID_PAGECOUNT]
     end
     

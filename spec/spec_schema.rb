@@ -2,11 +2,31 @@
 describe 'MSI::Schema' do
 
   before :each do
-  
+    # @msi = ( 'spec/msi/UISample.msi' )
+    # @db = MSI::Database.connect(@msi)
   end
   
   after :each do
-
+    # @db.close
+  end
+  
+  describe '.[]' do
+    it 'should return the schema for the give table' do
+      test = [
+       [:short, :error, {:null=>false}, {:key=>true}], 
+       [:char, :message, {:local=>true}]
+      ]
+      MSI::Schema['Error'].should == test
+    end  
+  end
+  
+  describe '.tables' do
+    it 'should return an array of tables' do
+      tables = MSI::Schema.tables
+      tables.should be_an_instance_of( Array )
+      tables.should include('Error')
+      tables.should include('ComboBox')
+    end
   end
   
   describe '#to_s' do
@@ -66,17 +86,18 @@ describe 'MSI::Schema' do
     end
   end
   
-  describe '#generate' do
-    it "should return a ruby schema script as a string" do
-      db = MSI::Database.connect('../msi/Schema.msi')
-      schema = MSI::Schema.generate(db)
-      test = File.read('lib/schema/schema.rb') 
-        s =  "@schema = [\n"
-        s <<  schema.sort.join(",\n\n")
-        s <<  "\n]\n" 
-
-      s.should == test
-      db.close      
+  describe '#dump' do
+    before{ @db_generate = MSI::Database.connect('spec/msi/Schema.msi') }
+    
+    after{ @db_generate.close } 
+    
+    it "should return a schema hash" do
+      schema = MSI::Schema.dump(@db_generate)
+      schema.should be_an_instance_of( Hash )
+      require 'yaml'
+      # File.open('lib/schema/UISample_schema.yml', 'w+'){|f| f.write YAML.dump(schema) }
+      test = YAML.load( File.read('lib/schema/schema.yml') )
+      schema.should == test  
     end
   end
 

@@ -1,10 +1,6 @@
 module MSI
 
   class Table
-  
-    def self.create(name, &block)
-      "CREATE TABLE #{name} ()"
-    end
     
     def initialize(name, db)
       @name = name
@@ -16,14 +12,18 @@ module MSI
     end
     
     def select(*columns)
-      @db.do "SELECT #{columns.join(', ')} FROM #{@name}"
+      v = @db.do "SELECT #{columns.join(', ')} FROM #{@name}"
+      a = v.to_a
+      v.close
+      a
     end
     
     def insert(*fields)
-      v = self.all
+      v = @db.do("SELECT * FROM #{@name}")
       r = MSI.conn.CreateRecord(v.types.size)
       fields.each_with_index{ |f, i| export(f, i+1, r) }
       v << r
+      v.close
       @db.commit
     end
     
@@ -37,8 +37,12 @@ module MSI
         record['Stringdata', index] = item
       when Integer
         record['Integerdata', index] = item
-      else 
-        Raise 'Unsupported column type'
+      when NilClass
+         return
+      when Array
+        raise 'Unsupported column type'
+      else
+        raise 'Unsupported column type'
       end
     end
     

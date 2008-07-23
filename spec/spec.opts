@@ -1,5 +1,5 @@
 --format progress
---format html:../wiry_specs.html
+--format html:spec_output.html
 --colour
 --require lib/wiry
 

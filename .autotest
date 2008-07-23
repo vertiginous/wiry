@@ -1,0 +1,3 @@
+Autotest.add_hook :initialize do |at|
+  %w{.msi .txt .html .git .exe .yml .autotest}.each {|exception|at.add_exception(exception)}
+end

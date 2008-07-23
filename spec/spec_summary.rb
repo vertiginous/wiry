@@ -2,7 +2,7 @@
 describe 'MSI::Summary' do
   
   before do
-    @summary = MSI::Summary.new('../msi/UISample.msi')
+    @summary = MSI::Summary.new('spec/msi/UISample.msi')
   end
   
   after do
@@ -34,14 +34,14 @@ describe 'MSI::Summary' do
     revision.should == "{Put Package Code GUID Here}"
   end
   
-  it 'should have a wordcount' do
-    wordcount = @summary.wordcount
-    wordcount.should == 2
+  it 'should have a word_count' do
+    word_count = @summary.word_count
+    word_count.should == 2
   end
 
-  it 'should have a pagecount' do
-    pagecount = @summary.pagecount
-    pagecount.should == 100
+  it 'should have a page_count' do
+    page_count = @summary.page_count
+    page_count.should == 100
   end
 
   it 'should have an application name' do
@@ -49,21 +49,33 @@ describe 'MSI::Summary' do
     application.should == "Windows Installer"
   end
 
-  it 'should be able to update' do
-    db = MSI::Database.new('../msi/spec_summary.msi')
-    db.close
-    MSI::Summary.update('../msi/spec_summary.msi') do |s|
-      s.title       = 'Summary Test Database'
-      s.subject     = 'Fake Product'
-      s.author      = 'Gordon Thiesfeld'
-      s.application = 'wiry - The Windows Installer Ruby librarY'
+  describe '.update' do
+  
+    before do
+      @msi = 'spec/msi/spec_summary.msi'
+      db = MSI::Database.new(@msi)
+      db.close
     end
     
-    s = MSI::Summary.new('../msi/spec_summary.msi')
-    s.title.should       == 'Summary Test Database'
-    s.subject.should     == 'Fake Product'
-    s.author.should      == 'Gordon Thiesfeld'
-    s.application.should == 'wiry - The Windows Installer Ruby librarY'
+    after do
+      File.delete(@msi) if File.exist?(@msi)
+    end
+  
+    it 'should be able to update' do
+
+      MSI::Summary.update( @msi) do |s|
+        s.title       = 'Summary Test Database'
+        s.subject     = 'Fake Product'
+        s.author      = 'Gordon Thiesfeld'
+        s.application = 'wiry - The Windows Installer Ruby librarY'
+      end
+      
+      s = MSI::Summary.new( @msi)
+      s.title.should       == 'Summary Test Database'
+      s.subject.should     == 'Fake Product'
+      s.author.should      == 'Gordon Thiesfeld'
+      s.application.should == 'wiry - The Windows Installer Ruby librarY'
+    end
   end
   
 end

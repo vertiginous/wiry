@@ -1,45 +1,60 @@
 
 describe 'MSI::Table' do
 
-  before :each do
-    @db = MSI::Database.connect('../msi/UISample.msi')
+  before do
+    @db = MSI::Database.connect('spec/msi/UISample.msi')
     @errors = @db[:Error]
   end
   
-  after :each do
+  after do
     @db.close
   end
 
   describe '#all' do
-    it "should return an MSI::Table" do
-      v = @errors.all
-      v.should be_an_instance_of( MSI::View )
-      v.to_a.size.should == 166
-      v.close
+   
+    before{ @view = @errors.all }
+    
+    it "should return an Array" do
+      @view.should be_an_instance_of( Array )
+      @view.to_a.size.should == 166
     end
+
   end
   
   describe '#select' do
+    
+    before{ @view = @errors.select('Message') }
+    
+    
     it "should execute a query against the table object" do
-      v = @errors.select('Message')
-      v.should be_an_instance_of( MSI::View )
-      v.to_a.size.should == 166
-      v.to_a.first.should ==  ["{{Fatal error: }}"]
-      v.close
-      v = @errors.select('Error','Message')
-      v.to_a.first.should ==  [0, "{{Fatal error: }}"]
-      v.close
+      @view.should be_an_instance_of( Array )
+      @view.size.should == 166
+      @view.first.should ==  ["{{Fatal error: }}"]
+      @view = @errors.select('Error','Message')
+      @view.to_a.first.should ==  [0, "{{Fatal error: }}"]
     end
   end
   
   describe '#insert' do
+
+    before do
+      @msi = 'spec/msi/table_insert.msi'
+      @db_insert = MSI::Database.new(@msi)
+      @db_insert.create_tables('Error' => [
+          [:short, :error, {:null => false}, {:key => true}],
+          [:char, :message, {:local => true}]
+        ]
+      )
+    end
+    
+    after do
+      @db_insert.close
+      File.delete(@msi) if File.exist?(@msi)
+    end
+
     it "should insert a row into the table" do
-      db = MSI::Database.new('../msi/table_insert.msi')
-      eval(File.read('lib/schema/schema.rb'))
-      @schema.each{|i| db.do(i.to_s) }
-      db[:Error].insert(0, '{{Fatal error: }}')
-      db[:Error].all.to_a.should == [[0, '{{Fatal error: }}']]
-      db.close      
+      @db_insert[:Error].insert(0, '{{Fatal error: }}')
+      @db_insert[:Error].all.to_a.should == [[0, '{{Fatal error: }}']]
     end
   end
      

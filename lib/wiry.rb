@@ -5,6 +5,7 @@ end
 $LOAD_PATH.unshift File.dirname(__FILE__)
 
 require 'wiry/msi'
+require 'wiry/msi/constants'
 require 'wiry/msi/database'
 require 'wiry/msi/table'
 require 'wiry/msi/view'

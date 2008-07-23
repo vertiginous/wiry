@@ -4,8 +4,8 @@ describe 'MSI::Record' do
   before :each do
     r = MSI.conn.CreateRecord(3)
     @record = MSI::Record.new(r)
-    @db = MSI::Database.connect('../msi/UISample.msi')
-    @view = @db.execute('SELECT * FROM Error')
+    @db = MSI::Database.connect('spec/msi/UISample.msi')
+    @view = @db.do('SELECT * FROM Binary')
   end
   
   after do
@@ -21,8 +21,12 @@ describe 'MSI::Record' do
   
   describe '#to_a' do
     it "should return an array" do
-      @record.to_a.should == ['','','']
+      @record.to_a.should == [nil,nil,nil]
     end
   end
+  
+  it 'should convert binary objects properly' # do
+  #   @view.to_a.first.should ==  ["bannrbmp", " "]
+  # end
   
 end
