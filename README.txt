@@ -1,6 +1,6 @@
 = wiry
 
-* FIX (url)
+http://github.com/vertiginous/wiry
 
 == DESCRIPTION:
 
