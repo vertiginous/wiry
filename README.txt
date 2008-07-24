@@ -1,5 +1,7 @@
 = wiry
 
+Gordon Thiesfeld 
+gthiesfeld AT gmail
 http://github.com/vertiginous/wiry
 
 == DESCRIPTION:
@@ -10,7 +12,7 @@ The Windows Installer Ruby librarY
 
 (The MIT License)
 
-Copyright (c) 2008 FIX
+Copyright (c) 2008 Gordon Thiesfeld
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
